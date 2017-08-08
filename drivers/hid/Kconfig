@@ -965,6 +965,13 @@ config HID_ALPS
 	Say Y here if you have a Alps touchpads over i2c-hid or usbhid
 	and want support for its special functionalities.
 
+config TL_HID_REMOTE
+	tristate "Telink HID device support"
+	depends on HID
+	default m
+	---help---
+	Support for Telink HID Device for BLE remote controller.
+
 endmenu
 
 endif # HID

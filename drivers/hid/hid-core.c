@@ -1580,6 +1580,9 @@ EXPORT_SYMBOL_GPL(hid_input_report);
 static bool hid_match_one_id(struct hid_device *hdev,
 		const struct hid_device_id *id)
 {
+
+			printk(KERN_EMERG"zewen---> dev_name:%s [FUNC]:%s LINE:%d id->bus:%d id->group:%d id->vendor:%d id->product:%d bus:%d group:%d vendor:%d product:%d\n", dev_name(&hdev->dev), __func__, __LINE__, \
+				id->bus, id->group, id->vendor, id->product, hdev->bus, hdev->group, hdev->vendor, hdev->product);
 	return (id->bus == HID_BUS_ANY || id->bus == hdev->bus) &&
 		(id->group == HID_GROUP_ANY || id->group == hdev->group) &&
 		(id->vendor == HID_ANY_ID || id->vendor == hdev->vendor) &&
@@ -1591,8 +1594,13 @@ const struct hid_device_id *hid_match_id(struct hid_device *hdev,
 {
 	for (; id->bus; id++)
 		if (hid_match_one_id(hdev, id))
+		{	
+			printk(KERN_EMERG"zewen---> [FUNC]:%s LINE:%d dev and drv match ok!!id->bus:%d id->group:%d id->vendor:%d id->product:%d bus:%d group:%d vendor:%d product:%d\n",  __func__, __LINE__, \
+				id->bus, id->group, id->vendor, id->product, hdev->bus, hdev->group, hdev->vendor, hdev->product);
 			return id;
+		}
 
+printk(KERN_EMERG"zewen---> [FUNC]:%s LINE:%d dev and drv match failed!!\n",  __func__, __LINE__);
 	return NULL;
 }
 
@@ -2817,7 +2825,7 @@ EXPORT_SYMBOL_GPL(hid_check_keys_pressed);
 static int __init hid_init(void)
 {
 	int ret;
-
+printk("zewen---> [FUNC]%s [LINE]:%d\n", __FUNCTION__, __LINE__);
 	if (hid_debug)
 		pr_warn("hid_debug is now used solely for parser and driver debugging.\n"
 			"debugfs is now used for inspecting the device (report descriptor, reports)\n");
