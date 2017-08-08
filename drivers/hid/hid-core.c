@@ -2190,6 +2190,14 @@ static const struct hid_device_id *hid_match_device(struct hid_device *hdev,
 {
 	struct hid_dynid *dynid;
 
+	/**** add start ***/
+	if(strcmp("hid-generic", hdrv->name) == 0 && hdev->vendor == 0x18D1 && hdev->product == 0X2C42)
+	{
+		printk("our BLE device can not pair hid-generic, so return NULL\n");
+		return NULL;
+	}
+	/**** add end ****/
+
 	spin_lock(&hdrv->dyn_lock);
 	list_for_each_entry(dynid, &hdrv->dyn_list, list) {
 		if (hid_match_one_id(hdev, &dynid->id)) {
