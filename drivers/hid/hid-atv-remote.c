@@ -1616,9 +1616,10 @@ static int atvr_snd_initialize(struct hid_device *hdev)
 
 	atvr_snd->pcm_hw = atvr_pcm_hardware;
 
-	strcpy(card->driver, "AndroidTV Remote Audio");
-	strcpy(card->shortname, "ATVRAudio");
-	sprintf(card->longname, "AndroidTV Remote %i audio", dev + 1);
+	strcpy(card->driver, "Telink Remote ");
+	strcpy(card->shortname, "TelinkAudio");
+	sprintf(card->longname, "Telink Remote %i audio", dev + 1);
+
 
 	snd_card_set_dev(card, &hdev->dev);
 
