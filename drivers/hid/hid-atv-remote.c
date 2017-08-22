@@ -61,7 +61,9 @@ MODULE_LICENSE("GPL v2");
 //#include "wav_file4.h"
 //include "wav_file5.h"
 //#include "wav_file6.h"
-#include "wav_file7.h"
+//#include "wav_file7.h"
+#include "wav_file13.h"
+//#include "wav_file12.h"
 #endif 
 
 int rev_packet_num = 0;
@@ -165,12 +167,12 @@ const unsigned char *pDataBuffer = hexData_10s;
 #define BYTES_PER_SAMPLE 2
 #define SAMPLES_PER_NOTIFICATION (ADPCM_RATIO*NOTIFICATION_LENGTH/BYTES_PER_SAMPLE) // 4*20/2=40
 #ifndef R_32K_DATA
-unsigned int g_time_interval = 2000; // 1Notification = 20BADPCM = 80Byte PCM = 2.5ms(80/2/16)
+unsigned int g_time_interval = 2500; // 1Notification = 20BADPCM = 80Byte PCM = 2.5ms(80/2/16)
 //unsigned int g_time_interval =  25000; // 1Notification = 20BADPCM = 80Byte PCM = 2.5ms(80/2/16)
 //unsigned int g_time_interval =  12000; // 1Notification = 20BADPCM = 80Byte PCM = 2.5ms(80/2/16)
 #else 
 //unsigned int g_time_interval = 2000; // 1Notification = 20BADPCM = 80Byte PCM = 2.5ms(80/2/16)
-unsigned int g_time_interval =  25000; // 1Notification = 20BADPCM = 80Byte PCM = 2.5ms(80/2/16)
+unsigned int g_time_interval =  2500; // 1Notification = 20BADPCM = 80Byte PCM = 2.5ms(80/2/16)
 #endif
 struct timer_list g_timer;
 static unsigned int fake_notifiy_index = 0;
@@ -182,9 +184,9 @@ static unsigned int fake_notifiy_index = 0;
 
 //int16_t ps[80]; // Store the uncompressed ACM notification data: 2*40=80B
 //int16_t ps[498]; // Store the uncompressed ACM notification data: 2*40=80B
-int16_t ps[554]; // Store the uncompressed ACM notification data: 2*40=80B
+int16_t ps[80]; // Store the uncompressed ACM notification data: 2*40=80B
 //int16_t pds[10]; // Notification data: 2*10=20B
-int16_t pds[70]; // Notification data: 2*10=20B
+int16_t pds[10]; // Notification data: 2*10=20B
 static unsigned int test_counter = 0;
  
 void _TimerHandler(unsigned long data)
@@ -196,8 +198,8 @@ void _TimerHandler(unsigned long data)
     mod_timer( &g_timer, jiffies + usecs_to_jiffies(g_time_interval));
     //unsigned char *pFakeData = NULL;
     fake_notifiy_index ++;
-if(fake_notifiy_index == 1 || fake_notifiy_index == 3 || fake_notifiy_index ==100)
-	printk("miles---> [FUNC]:%s [LINE]:%d fake_notifiy_index:%d\n",  __FUNCTION__, __LINE__, fake_notifiy_index);
+//if(fake_notifiy_index == 1 || fake_notifiy_index == 3 || fake_notifiy_index ==100)
+	//printk("miles---> [FUNC]:%s [LINE]:%d fake_notifiy_index:%d\n",  __FUNCTION__, __LINE__, fake_notifiy_index);
 #ifdef EACH_WITH_HEAD_MODE // Every notification with 2B ADPCM
     each = 1;
 #endif
@@ -205,16 +207,16 @@ if(fake_notifiy_index == 1 || fake_notifiy_index == 3 || fake_notifiy_index ==10
         //memcpy(ps, pDataBuffer, 80);
 #ifdef R_32K_DATA
         //memcpy(ps, pDataBuffer, 148);
-        memcpy(ps, pDataBuffer, 996);
+        memcpy(ps, pDataBuffer, 160);
 #else
-        memcpy(ps, pDataBuffer, 74);
+        memcpy(ps, pDataBuffer, 80);
        // memcpy(ps, pDataBuffer, 498);
        // memcpy(ps, pDataBuffer, 474);
         //memcpy(ps, pDataBuffer, 554);
        // memcpy(ps, pDataBuffer, 234);
 #endif
         //mic_to_adpcm_split (signed short ps, int len, signed short pds, int start)
-        mic_to_adpcm_split (ps, 36, pds, 1);
+        mic_to_adpcm_split (ps, 40, pds, 1);
         //mic_to_adpcm_split (ps, 249, pds, 1);
        // mic_to_adpcm_split (ps, 237, pds, 1);
         //mic_to_adpcm_split (ps, 277, pds, 1);
@@ -244,7 +246,11 @@ if(fake_notifiy_index == 1 || fake_notifiy_index == 3 || fake_notifiy_index ==10
 #endif
 
 #ifndef EACH_WITH_HEAD_MODE // Every notification with 2B ADPCM
+	#ifndef R_32K_DATA 
         memcpy(ps, pDataBuffer+(fake_notifiy_index-1)*80, 80);
+	#else 
+        memcpy(ps, pDataBuffer+(fake_notifiy_index-1)*160, 160);
+	#endif
         mic_to_adpcm_split (ps, 40, pds, 0);
 #else
 	#ifdef R_32K_DATA
@@ -289,7 +295,7 @@ if(fake_notifiy_index == 1 || fake_notifiy_index == 3 || fake_notifiy_index ==10
 	unsigned char *ppp = (unsigned char *)pds;
 	int ii;
 	static int ip = 0;
-#if 0
+#if 0//local adpcm, zewen
 	if(ip < 500)
 	{
 for(ii = 0; ii<NOTIFICATION_LENGTH;ii++)
@@ -305,7 +311,11 @@ ip++;
     //if(80*fake_notifiy_index + 160 > sizeof(sinWave_PCM_1K_3S)){
     //if(80*(1+fake_notifiy_index)  == 320000){
 #ifndef EACH_WITH_HEAD_MODE
-    if(80*(fake_notifiy_index)  > sizeof(hexData_10s)){
+	#ifndef R_32K_DATA
+    	if(80*(fake_notifiy_index)  >= sizeof(hexData_10s)){
+	#else
+    	if(160*(fake_notifiy_index)  >= sizeof(hexData_10s)){
+	#endif
 #else
 	#ifdef R_32K_DATA
 	//if(74*(fake_notifiy_index)  > sizeof(hexData_10s)){
@@ -1654,11 +1664,12 @@ static int atvr_raw_event(struct hid_device *hdev, struct hid_report *report,
 			//	if(i == 1)
 			//		printk("%d ",  data[i]);
 			//	else
-					printk("%x ",  data[i]);
+				//	printk("%x ",  data[i]);//rev adpcm, from remote, zewen
+					//printk("\b");
 			}
 		}
-		printk("\n");
-		it++;
+		//printk("\n");//rev adpcm, from remote, zewen
+	//	it++;
 //	}
 #endif
 	if (report->id == 0x07 || report->id == 0x06 || report->id == 0x05 || report->id == ADPCM_AUDIO_REPORT_ID) {
@@ -2020,8 +2031,12 @@ void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start
 #if 0
 	int  iii = 0;
 	unsigned char *pj = (unsigned char *)ps;
+	if(start){
+		printk("%x %x ", pj[0], pj[1]);
+		iii += 2;
+	}
 	//for(; iii < len*2; iii++)
-	for(; iii < 498; iii++)
+	for(; iii < 160; iii++)
 	{
 		printk("%x ", *(pj + iii));
 	}
@@ -2037,13 +2052,17 @@ void mic_to_adpcm_split (signed short *ps, int len, signed short *pds, int start
         predict = ps[0];
         *(((signed char *)pd)) = predict&0xff;
         *(((signed char *)pd)+1 ) = (predict>>8)&0xff;
+		
+#if 1
 		if(ii == 0)
 		{
 			 printk("miles---> [FUNC]:%s [LINE]:%d, predict:0x%x D:%d predict>>8:0x%x sizeof(hexData_10s):%d sizeof(short):%d \n", \
 					 				__FUNCTION__, __LINE__, predict,predict, (predict>>8)&0xff, sizeof(hexData_10s), sizeof(short));
 			ii++;
 		}
-        //len = 36;
+#endif 
+	//	printk("%x %x ", predict&0xff,  (predict>>8)&0xff);//local pcm, zewen
+        len = len - 1;
         //*pd++ = ps[4];
         //ps++;
         pd++;
@@ -2053,22 +2072,30 @@ outp = (signed char *)pd;
 int outbuf;
 int bufstep = 1;
     //byte5- byte128: 124 byte(62 sample) adpcm data
-#ifndef R_32K_DATA
+//#ifndef R_32K_DATA
     for (i=0; i<len; i++) {
-#else 
-    for (i=0; i<len-1; i++) {
-#endif
+//#else 
+  //  for (i=0; i<len-1; i++) {
+//#endif
         s16 di;
         if (start){
             // *2是因为其实一个sample占用4Bytes，但是我们只使用2个Byte，相当于取了MSB
             //di = ps[(i+4)*2];
 #ifdef R_32K_DATA
             di = ps[i*2+2];
+	//		printk("%x %x ", ps[i*2+2]&0xff, (ps[i*2+2]>>8)&0xff);//local pcm,zewen
 #else 
             di = ps[i+1];
+		//	printk("%x %x ", ps[i+1]&0xff, (ps[i+1]>>8)&0xff);//local pcm, zewen
 #endif
         } else {
+#ifndef R_32K_DATA
             di = ps[i];
+		//	printk("%x %x ",  ps[i]&0xff, (ps[i]>>8)&0xff);//local pcm, zewen
+#else
+			di = ps[i*2];
+		//	printk("%x %x ",  ps[i*2]&0xff, (ps[i*2]>>8)&0xff);//local pcm,zewen
+#endif
         }
 
 		//printk("di:%x ", di);
@@ -2151,7 +2178,8 @@ int bufstep = 1;
     }
 	if(!bufstep)
 		*outp++ = outbuf;
-	//printk("\n");
+	//printk("\n");//local pcm, zewen
 }
 #endif
+
 
