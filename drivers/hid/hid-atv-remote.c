@@ -123,7 +123,7 @@ size_t MIN_SAMPLES_PER_PACKET_P2 = 32;
 size_t MAX_PACKETS_PER_BUFFER;
 size_t MAX_BUFFER_SIZE;
 
-static short mic_sample_rate = 8;
+static short mic_sample_rate = 16;
 module_param_named(rate, mic_sample_rate, short, S_IRUGO);
 MODULE_PARM_DESC(mic_sample_rate, "mic sample rate");
 
@@ -1884,11 +1884,10 @@ printk("after:bus[0]:%d group[0]:%d  vendor[0]:%d product[0]:%d num:%lu\n", atvr
 	   																											atvr_driver.id_table[0].product, sizeof(atvr_devices)/sizeof(atvr_devices[0]));
 #if 1//zewen
 //#ifdef USE_8K_SAMPLE
-if(16 != mic_sample_rate)
+if(8 == mic_sample_rate)
 {
 //8K
-printk("zewen-->[FUNC]%s [LINE]:%d mic_sample_rate:%d now is 8K sample mode, Include the following situation:\n1.default is 8K sample mode\n2.you do not select 16K mode\n", \
-																																			__FUNCTION__, __LINE__, mic_sample_rate);
+printk("zewen---> [FUNC]%s [LINE]:%d mic_sample_rate:%d You select 8K sample mode!!\n", __FUNCTION__, __LINE__, mic_sample_rate);
 	USE_RATE_MIN = 8000;
 	USE_RATE_MAX = 8000;
 	//unsigned int USE_RATES_ARRAY = USE_RATE_MIN;
@@ -1905,7 +1904,8 @@ printk("zewen-->[FUNC]%s [LINE]:%d mic_sample_rate:%d now is 8K sample mode, Inc
 else
 {
 //16K
-printk("zewen---> [FUNC]%s [LINE]:%d mic_sample_rate:%d You select 16K sample mode!!\n", __FUNCTION__, __LINE__, mic_sample_rate);
+printk("zewen-->[FUNC]%s [LINE]:%d mic_sample_rate:%d now is 16K sample mode, Include the following situation:\n1.default is 16K sample mode\n2.you do not select 8K mode\n", \
+																														__FUNCTION__, __LINE__, mic_sample_rate);
 	USE_RATE_MIN = 16000;
 	USE_RATE_MAX = 16000;
 //	#define USE_RATES_ARRAY      {USE_RATE_MIN}
